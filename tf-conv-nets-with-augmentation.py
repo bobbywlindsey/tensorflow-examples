@@ -27,7 +27,7 @@ train_datagen = ImageDataGenerator(
       zoom_range=0.2,
       horizontal_flip=True,
       fill_mode='nearest')
-# Noramlize
+# Normalize
 validation_datagen = ImageDataGenerator(rescale=1/255)
 
 train_generator      = train_datagen.flow(training_images, training_labels, batch_size = 32)
