@@ -55,14 +55,32 @@ test_sequences = tokenizer.texts_to_sequences(test_x)
 train_padded = pad_sequences(train_sequences, maxlen=sequence_length, truncating=trunc_type)
 test_padded = pad_sequences(test_sequences, maxlen=sequence_length, truncating=trunc_type)
 
-# Build your model
+# Build your model (this is kind of like a CBOW style model)
 model = tf.keras.Sequential([
-        tf.keras.layers.Embedding(vocab_size, embedding_dim,
-                                  input_length=sequence_length, name='embedding'),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(6, activation='relu'),
-        tf.keras.layers.Dense(1, activation='sigmoid')
+    tf.keras.layers.Embedding(vocab_size, embedding_dim,
+                                input_length=sequence_length, name='embedding'),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(6, activation='relu'),
+    tf.keras.layers.Dense(1, activation='sigmoid')
 ])
+
+# Optionally build a CNN instead
+filters = 16
+kernel_size = 3
+model = tf.keras.Sequential([
+    tf.keras.layers.Embedding(vocab_size, embedding_dim,
+                                input_length=sequence_length, name='embedding'),
+    tf.keras.layers.Dropout(0.5),
+    tf.keras.layers.Conv1D(filters, kernel_size, padding='valid', activation='relu'),
+    tf.keras.layers.MaxPooling1D(),
+    tf.keras.layers.Conv1D(filters, kernel_size, padding='valid', activation='relu'),
+    tf.keras.layers.MaxPooling1D(),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(250, activation='relu'),
+    tf.keras.layers.Dropout(0.5),
+    tf.keras.layers.Dense(1, activation='sigmoid')
+])
+
 model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
 print(model.summary())
 
